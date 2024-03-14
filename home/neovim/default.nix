@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-{
+{ pkgs, ... }: {
   imports = [
     ./telescope.nix
     ./coc.nix
@@ -11,9 +10,7 @@
   programs.neovim = {
     enable = true;
 
-    extraPackages = [
-      pkgs.lazygit
-    ];
+    extraPackages = [ pkgs.lazygit ];
 
     # Full list here,
     # https://github.com/NixOS/nixpkgs/blob/master/pkgs/applications/editors/vim/plugins/generated.nix

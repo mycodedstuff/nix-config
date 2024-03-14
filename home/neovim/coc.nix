@@ -1,9 +1,6 @@
-{ pkgs, ... }:
-{
+{ pkgs, ... }: {
   programs.neovim = {
-    coc = {
-      enable = true;
-    };
+    coc = { enable = true; };
 
     extraPackages = [
       pkgs.nodejs # coc requires nodejs

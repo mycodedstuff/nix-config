@@ -1,5 +1,6 @@
 {
-  description = "A home-manager template providing useful tools & settings for Nix-based development";
+  description =
+    "A home-manager template providing useful tools & settings for Nix-based development";
 
   inputs = {
     # Principle inputs (updated by `nix run .#update`)
@@ -14,43 +15,40 @@
     systems.url = "github:nix-systems/default";
   };
 
-  outputs = inputs:
+  outputs = inputs@{ nixpkgs, ... }:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
       systems = import inputs.systems;
-      imports = [
-        inputs.nixos-flake.flakeModule
-      ];
+      imports = [ inputs.nixos-flake.flakeModule ];
 
       flake.templates.default = {
-        description = "A `home-manager` template providing useful tools & settings for Nix-based development";
+        description =
+          "A `home-manager` template providing useful tools & settings for Nix-based development";
         path = builtins.path {
           path = ./.;
-          filter = path: _: with inputs.nixpkgs.lib;
-            !(hasSuffix "LICENSE" path ||
-              hasSuffix "README.md" path ||
-              hasSuffix "flake.lock" path);
+          filter = path: _:
+            with inputs.nixpkgs.lib;
+            !(hasSuffix "LICENSE" path || hasSuffix "README.md" path
+              || hasSuffix "flake.lock" path);
         };
       };
 
       perSystem = { self', pkgs, ... }:
-        let
-          # TODO: Change username
-          myUserName = "runner";
-        in
-        {
+        let myUserName = "amansingh";
+        in {
           legacyPackages.homeConfigurations.${myUserName} =
-            inputs.self.nixos-flake.lib.mkHomeConfiguration
-              pkgs
-              ({ pkgs, ... }: {
-                # Edit the contents of the ./home directory to install packages and modify dotfile configuration in your
-                # $HOME.
-                #
-                # https://nix-community.github.io/home-manager/index.html#sec-usage-configuration
-                imports = [ ./home ];
-                home.username = myUserName;
-                home.homeDirectory = "/${if pkgs.stdenv.isDarwin then "Users" else "home"}/${myUserName}";
-                home.stateVersion = "22.11";
-              });
+            inputs.self.nixos-flake.lib.mkHomeConfiguration pkgs
+            ({ pkgs, ... }: {
+              # Edit the contents of the ./home directory to install packages and modify dotfile configuration in your
+              # $HOME.
+              #
+              # https://nix-community.github.io/home-manager/index.html#sec-usage-configuration
+              imports = [ ./home ];
+              home.username = myUserName;
+              home.homeDirectory = "/${
+                  if pkgs.stdenv.isDarwin then "Users" else "home"
+                }/${myUserName}";
+              home.stateVersion = "22.11";
+            });
 
           formatter = pkgs.nixpkgs-fmt;
 
@@ -59,7 +57,8 @@
 
           # Enable 'nix build' to build the home configuration, but without
           # activating.
-          packages.default = self'.legacyPackages.homeConfigurations.${myUserName}.activationPackage;
+          packages.default =
+            self'.legacyPackages.homeConfigurations.${myUserName}.activationPackage;
 
           devShells.default = pkgs.mkShell {
             name = "nix-dev-home";

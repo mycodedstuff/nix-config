@@ -1,7 +1,18 @@
-{ pkgs, ... }:
-
-# Platform-independent terminal setup
-{
+inputs@{ pkgs, ... }:
+let
+  treemux = pkgs.tmuxPlugins.mkTmuxPlugin {
+    pluginName = "treemux";
+    version = "master";
+    src = pkgs.fetchFromGitHub {
+      owner = "kiyoon";
+      repo = "treemux";
+      rev = "c97045c55a8068e367eb876319c80c3d99bdccc8";
+      sha256 = "sha256-wFPV9LiRF83kBx+gQRwSa7HSvqVxnmsutxfB0XhN0uU=";
+    };
+  };
+  _ = throw (builtins.trace inputs inputs);
+  # Platform-independent terminal setup
+in {
   # Nix packages to install to $HOME
   #
   # Search for packages here: https://search.nixos.org/packages
@@ -25,6 +36,8 @@
     tmate
 
     nix-health
+    nixfmt
+    ghostscript
   ];
 
   home.shellAliases = {
@@ -63,8 +76,19 @@
     zsh = {
       enable = true;
       envExtra = ''
-        # Make Nix and home-manager installed things available in PATH.
-        export PATH=/run/current-system/sw/bin/:/nix/var/nix/profiles/default/bin:$HOME/.nix-profile/bin:/etc/profiles/per-user/$USER/bin:$PATH
+
+        	export NVM_DIR="$HOME/.nvm"
+        	function nvm() {
+        	  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+        	  nvm "$@"
+        	}
+        	[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+        	export PATH="/Users/amansingh/.scripts:/Users/amansingh/Library/Python/3.8/bin:/usr/local/opt/postgresql@13/bin:/usr/local/opt/openjdk@8/bin:/usr/local/sbin:$PATH"
+        	export PATH="/Users/amansingh/.pyenv/versions/2.7.18/bin:$PATH"
+
+                # Make Nix and home-manager installed things available in PATH.
+                export PATH=/run/current-system/sw/bin/:/nix/var/nix/profiles/default/bin:$HOME/.nix-profile/bin:/etc/profiles/per-user/$USER/bin:$PATH
+                [ -f "/Users/amansingh/.ghcup/env" ] && source "/Users/amansingh/.ghcup/env" # ghcup-env
       '';
     };
 
@@ -82,6 +106,20 @@
       extraConfig = {
         # init.defaultBranch = "master";
       };
+    };
+    tmux = {
+      enable = true;
+      mouse = true;
+      baseIndex = 1;
+      historyLimit = 20000;
+      extraConfig = ''
+                        bind v copy-mode
+                        setw -g mode-keys vi
+                	run-shell ~/nix-config/home/tmux/plugins/tmux-power.tmux
+        		set -g @treemux-tree-nvim-init-file ${treemux.outPath}/share/tmux-plugins/treemux/configs/treemux_init.lua
+        		run-shell ${treemux.outPath}/share/tmux-plugins/treemux/sidebar.tmux
+      '';
+      plugins = with pkgs; [ ];
     };
   };
 }
