@@ -1,10 +1,9 @@
-{ flake, ... }: {
+{ flake, pkgs, ... }: {
   imports = [
-    # This loads ./neovim/default.nix - neovim configured for Haskell dev, and other things.
-    ./neovim
+    ./nix-index.nix
+    ./neovim.nix # Uncomment this if you do not want to setup Neovim.
     ./starship.nix
     ./terminal.nix
-    # Add more of your home-manager modules here.
   ];
 
   # Recommended Nix settings
@@ -15,5 +14,12 @@
     # FIXME: Waiting for this to be merged:
     # https://github.com/nix-community/home-manager/pull/4031
     # nixPath = [ "nixpkgs=${flake.inputs.nixpkgs}" ]; # Enables use of `nix-shell -p ...` etc
+
+    # Garbage collect the Nix store
+    gc = {
+      automatic = true;
+      # Change how often the garbage collector runs (default: weekly)
+      # frequency = "monthly";
+    };
   };
 }
