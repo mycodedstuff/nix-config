@@ -8,7 +8,7 @@
         style_user = "blue bold";
         style_root = "red bold";
         format = "[$user]($style) ";
-        disabled = false;
+        disabled = true;
         show_always = true;
       };
       hostname = {
@@ -16,8 +16,9 @@
         ssh_symbol = "🌐 ";
         format = "on [$hostname](bold red) ";
         trim_at = ".local";
-        disabled = false;
+        disabled = true;
       };
+      gcloud.disabled = true;
     };
   };
 }

@@ -33,7 +33,7 @@
         formatter = pkgs.nixpkgs-fmt;
 
         devShells.default = pkgs.mkShell {
-          name = "nix-dev-home";
+          name = "nix-dev";
           nativeBuildInputs = with pkgs; [ just ];
         };
       };
