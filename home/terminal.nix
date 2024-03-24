@@ -21,7 +21,8 @@ let
     };
   };
   delta-themes = builtins.fetchurl {
-    url = "https://raw.githubusercontent.com/dandavison/delta/master/themes.gitconfig";
+    url =
+      "https://raw.githubusercontent.com/dandavison/delta/master/themes.gitconfig";
     sha256 = "sha256:09kfrlmrnj5h3vs8cwfs66yhz2zpgk0qnmajvsr57wsxzgda3mh6";
   };
   # Platform-independent terminal setup
@@ -35,6 +36,9 @@ in {
     fd
     sd
     tree
+    fzf
+    sad
+    bottom
 
     # Nix dev
     cachix
@@ -55,6 +59,7 @@ in {
   home.shellAliases = {
     g = "git";
     lg = "lazygit";
+    v = "nvim";
   };
 
   # Programs natively supported by home-manager.
@@ -100,19 +105,19 @@ in {
         plugins = [ "git" "sudo" "docker" "direnv" "fzf" ];
       };
       envExtra = ''
-                export NVM_DIR="$HOME/.nvm"
-                function nvm() {
-                  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-                	nvm "$@"
-              	}
-                [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-                export PATH="/Users/amansingh/.scripts:/Users/amansingh/Library/Python/3.8/bin:/usr/local/opt/postgresql@13/bin:/usr/local/opt/openjdk@8/bin:/usr/local/sbin:$PATH"
-                export PATH="/Users/amansingh/.pyenv/versions/2.7.18/bin:$PATH"
-		export PATH=/run/current-system/sw/bin/:/nix/var/nix/profiles/default/bin:$HOME/.nix-profile/bin:/etc/profiles/per-user/$USER/bin:$PATH
+                        export NVM_DIR="$HOME/.nvm"
+                        function nvm() {
+                          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+                        	nvm "$@"
+                      	}
+                        [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+                        export PATH="/Users/amansingh/.scripts:/Users/amansingh/Library/Python/3.8/bin:/usr/local/opt/postgresql@13/bin:/usr/local/opt/openjdk@8/bin:/usr/local/sbin:$PATH"
+                        export PATH="/Users/amansingh/.pyenv/versions/2.7.18/bin:$PATH"
+        		export PATH=/run/current-system/sw/bin/:/nix/var/nix/profiles/default/bin:$HOME/.nix-profile/bin:/etc/profiles/per-user/$USER/bin:$PATH
 
-                # Make Nix and home-manager installed things available in PATH.
-                export PATH=/run/current-system/sw/bin/:/nix/var/nix/profiles/default/bin:$HOME/.nix-profile/bin:/etc/profiles/per-user/$USER/bin:$PATH
-                [ -f "/Users/amansingh/.ghcup/env" ] && source "/Users/amansingh/.ghcup/env" # ghcup-env
+                        # Make Nix and home-manager installed things available in PATH.
+                        export PATH=/run/current-system/sw/bin/:/nix/var/nix/profiles/default/bin:$HOME/.nix-profile/bin:/etc/profiles/per-user/$USER/bin:$PATH
+                        [ -f "/Users/amansingh/.ghcup/env" ] && source "/Users/amansingh/.ghcup/env" # ghcup-env
       '';
     };
 
@@ -125,14 +130,10 @@ in {
     # https://nixos.asia/en/git
     git = {
       enable = true;
-      includes = [
-        { path = delta-themes; }
-      ];
+      includes = [{ path = delta-themes; }];
       extraConfig = {
         init.defaultBranch = "master";
-        core = {
-          fsmonitor = true;
-        };
+        core = { fsmonitor = true; };
         push.autoSetupRemote = true;
         #diff.algorithm = "histogram";
         merge.conflictstyle = "zdiff3";
@@ -141,7 +142,7 @@ in {
         enable = true;
         options = {
           line-numbers = true;
-          side-by-side = true;
+          side-by-side = false;
           features = "mellow-barbet";
         };
       };
@@ -151,9 +152,10 @@ in {
       mouse = true;
       baseIndex = 1;
       historyLimit = 20000;
-      escapeTime = 150;
-      terminal = "tmux-256color";
+      escapeTime = 80;
+      terminal = "screen-256color";
       keyMode = "vi";
+      shortcut = "a";
       extraConfig = ''
         bind v copy-mode
         bind -n C-k clear-history
@@ -171,17 +173,17 @@ in {
       enable = true;
       settings = {
         gui = {
-          activeBorderColor = ["#89b4fa" "bold"];
+          activeBorderColor = [ "#f9e2af" "bold" ];
           inactiveBorderColor = "#a6adc8";
           optionsTextColor = "#89b4fa";
           selectedLineBgColor = "#313244";
-          selectedRangeBgColor = "#313244";
           cherryPickedCommitBgColor = "#45475a";
-          cherryPickedCommitFgColor = "#89b4fa";
+          cherryPickedCommitFgColor = "#f9e2af";
           unstagedChangesColor = "#f38ba8";
           defaultFgColor = "#cdd6f4";
           searchingActiveBorderColor = "#f9e2af";
         };
+        os = { editPreset = "nvim"; };
       };
     };
   };
