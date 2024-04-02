@@ -1,32 +1,57 @@
 { pkgs, ... }:
 let
-  treemux = pkgs.tmuxPlugins.mkTmuxPlugin {
-    pluginName = "treemux";
-    version = "master";
-    src = pkgs.fetchFromGitHub {
-      owner = "kiyoon";
-      repo = "treemux";
-      rev = "c97045c55a8068e367eb876319c80c3d99bdccc8";
-      sha256 = "sha256-wFPV9LiRF83kBx+gQRwSa7HSvqVxnmsutxfB0XhN0uU=";
-    };
-  };
   tokyo-night = pkgs.tmuxPlugins.mkTmuxPlugin {
-    pluginName = "tmux-tokyo-night";
+    pluginName = "tokyo-night-tmux";
     version = "master";
     src = pkgs.fetchFromGitHub {
-      owner = "fabioluciano";
-      repo = "tmux-tokyo-night";
-      rev = "ee73d4a9ba6222d7d51492a4e0e797c9249a879c";
-      sha256 = "sha256-wWWxO6XNcfKO1TRxBhxd8lJLn7wIxyX4Fm1Nd2Rhbkw=";
+      owner = "janoamaral";
+      repo = "tokyo-night-tmux";
+      rev = "c2f6fa9884b923a351b9ca7216aefdf0f581b08c";
+      sha256 = "sha256-TlM68JajlSBOf/Xg8kxmP1ExwWquDQXeg5utPoigavo=";
     };
+    rtpFilePath = "tokyo-night.tmux";
   };
   delta-themes = builtins.fetchurl {
     url =
       "https://raw.githubusercontent.com/dandavison/delta/master/themes.gitconfig";
     sha256 = "sha256:09kfrlmrnj5h3vs8cwfs66yhz2zpgk0qnmajvsr57wsxzgda3mh6";
   };
+  bat-cappuccin = pkgs.fetchFromGitHub {
+    owner = "catppuccin";
+    repo = "bat";
+    rev = "b19bea35a85a32294ac4732cad5b0dc6495bed32";
+    sha256 = "sha256-POoW2sEM6jiymbb+W/9DKIjDM1Buu1HAmrNP0yC2JPg=";
+  };
+  tmux-ressurect = pkgs.tmuxPlugins.mkTmuxPlugin {
+    pluginName = "tmux-ressurect";
+    version = "master";
+    src = pkgs.fetchFromGitHub {
+      owner = "mycodedstuff";
+      repo = "tmux-resurrect";
+      rev = "c967c03155532c8c36f7c2e9d75bea742628fba8";
+      sha256 = "sha256-colMKncYZj/3Oe5soawIDNPAz53o3USVzuhQimVqLXA=";
+    };
+    rtpFilePath = "resurrect.tmux";
+  };
+  tmux-network-bandwidth = pkgs.tmuxPlugins.mkTmuxPlugin {
+    pluginName = "tmux-network-bandwidth";
+    version = "master";
+    src = pkgs.fetchFromGitHub {
+      owner = "xamut";
+      repo = "tmux-network-bandwidth";
+      rev = "63c6b3283d537d9b86489c13b99ba0c65e0edac8";
+      sha256 = "sha256-8FP7xdeRe90+ksQJO0sQ35OdH1BxVY7PkB8ZXruvSXM=";
+    };
+    rtpFilePath = "tmux-network-bandwidth.tmux";
+  };
   # Platform-independent terminal setup
 in {
+  xdg.configFile = {
+    "direnv/direnv.toml".text = ''
+      [global]
+      hide_env_diff = true
+    '';
+  };
   # Nix packages to install to $HOME
   #
   # Search for packages here: https://search.nixos.org/packages
@@ -39,6 +64,7 @@ in {
     fzf
     sad
     bottom
+    coreutils
 
     # Nix dev
     cachix
@@ -54,20 +80,39 @@ in {
     nix-health
     nixfmt
     ghostscript
+
+    #Formatters
+    jq
+    haskellPackages.hindent
+    haskellPackages.cabal-fmt
+    prettierd
+    stylua
+    rustfmt
+    black
+    codespell
+    cmake-format
   ];
 
   home.shellAliases = {
     g = "git";
     lg = "lazygit";
     v = "nvim";
+    t = "tmux";
   };
 
   # Programs natively supported by home-manager.
   programs = {
-    bat.enable = true;
-    # Type `z <pat>` to cd to some directory
+    bat = {
+      enable = true;
+      themes = {
+        catppuccin-mocha = {
+          src = bat-cappuccin;
+          file = "themes/Catppuccin Mocha.tmTheme";
+        };
+      };
+      config = { theme = "catppuccin-mocha"; };
+    };
     zoxide.enable = true;
-    # Type `<ctrl> + r` to fuzzy search your shell history
     fzf.enable = true;
     jq.enable = true;
     htop.enable = true;
@@ -93,7 +138,7 @@ in {
     zsh = {
       enable = true;
       enableCompletion = true;
-      enableAutosuggestions = true;
+      autosuggestion.enable = true;
       autocd = true;
       history = {
         size = 100000000;
@@ -105,19 +150,19 @@ in {
         plugins = [ "git" "sudo" "docker" "direnv" "fzf" ];
       };
       envExtra = ''
-                        export NVM_DIR="$HOME/.nvm"
-                        function nvm() {
-                          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-                        	nvm "$@"
-                      	}
-                        [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-                        export PATH="/Users/amansingh/.scripts:/Users/amansingh/Library/Python/3.8/bin:/usr/local/opt/postgresql@13/bin:/usr/local/opt/openjdk@8/bin:/usr/local/sbin:$PATH"
-                        export PATH="/Users/amansingh/.pyenv/versions/2.7.18/bin:$PATH"
-        		export PATH=/run/current-system/sw/bin/:/nix/var/nix/profiles/default/bin:$HOME/.nix-profile/bin:/etc/profiles/per-user/$USER/bin:$PATH
+        export NVM_DIR="$HOME/.nvm"
+        function nvm() {
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+            nvm "$@"
+        }
+        [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+        export PATH="/Users/amansingh/.scripts:/Users/amansingh/Library/Python/3.8/bin:/usr/local/opt/postgresql@13/bin:/usr/local/opt/openjdk@8/bin:/usr/local/sbin:$PATH"
+        export PATH="/Users/amansingh/.pyenv/versions/2.7.18/bin:$PATH"
+        export PATH=/run/current-system/sw/bin/:/nix/var/nix/profiles/default/bin:$HOME/.nix-profile/bin:/etc/profiles/per-user/$USER/bin:$PATH
 
-                        # Make Nix and home-manager installed things available in PATH.
-                        export PATH=/run/current-system/sw/bin/:/nix/var/nix/profiles/default/bin:$HOME/.nix-profile/bin:/etc/profiles/per-user/$USER/bin:$PATH
-                        [ -f "/Users/amansingh/.ghcup/env" ] && source "/Users/amansingh/.ghcup/env" # ghcup-env
+        # Make Nix and home-manager installed things available in PATH.
+        export PATH=/run/current-system/sw/bin/:/nix/var/nix/profiles/default/bin:$HOME/.nix-profile/bin:/etc/profiles/per-user/$USER/bin:$PATH
+        [ -f "/Users/amansingh/.ghcup/env" ] && source "/Users/amansingh/.ghcup/env" # ghcup-env
       '';
     };
 
@@ -135,7 +180,7 @@ in {
         init.defaultBranch = "master";
         core = { fsmonitor = true; };
         push.autoSetupRemote = true;
-        #diff.algorithm = "histogram";
+        diff.algorithm = "histogram";
         merge.conflictstyle = "zdiff3";
       };
       delta = {
@@ -151,21 +196,56 @@ in {
       enable = true;
       mouse = true;
       baseIndex = 1;
-      historyLimit = 20000;
-      escapeTime = 80;
+      historyLimit = 200000;
+      escapeTime = 5;
       terminal = "screen-256color";
       keyMode = "vi";
-      shortcut = "a";
+      shortcut = "x";
+      plugins = with pkgs.tmuxPlugins; [
+        logging
+        {
+          plugin = tokyo-night;
+          extraConfig = ''
+            set -g @tokyo-night-tmux_window_id_style fsquare
+            set -g @tokyo-night-tmux_pane_id_style hsquare
+          '';
+        }
+        {
+          plugin = tmux-network-bandwidth;
+          extraConfig = let
+            script = pkgs.writeShellScript "status-right-decor" ''
+              tmux set-option -gq status-right "#[bg=#15161e] #{network_bandwidth} $(tmux show-option -gqv status-right)"
+            '';
+          in ''
+          set-option -g status-interval 2
+          run-shell ${script}
+          '';
+        }
+        {
+          plugin = tmux-ressurect;
+          extraConfig = ''
+            set -g @resurrect-strategy-nvim 'session'
+            set -g @resurrect-save-command-strategy 'psutil'
+            set -g @resurrect-processes '~nvim' #set this to :all: to allow all processes
+          '';
+        }
+        {
+          plugin = continuum;
+          extraConfig = ''
+            set -g @continuum-save-interval '5' # minutes
+          '';
+        }
+      ];
       extraConfig = ''
         bind v copy-mode
         bind -n C-k clear-history
+        bind c new-window -c "#{pane_current_path}"
+        bind '"' split-window -c "#{pane_current_path}"
+        bind "'" split-window -h -c "#{pane_current_path}"
         bind -T copy-mode-vi MouseDragEnd1Pane send-keys -X copy-pipe pbcopy
         bind -T copy-mode-vi y send-keys -X copy-pipe-and-cancel pbcopy
         bind -T copy-mode-vi Enter send-keys -X copy-pipe-and-cancel pbcopy
-        set -g @treemux-tree-nvim-init-file ${treemux}/share/tmux-plugins/treemux/configs/treemux_init.lua
-        run-shell ${treemux}/share/tmux-plugins/treemux/sidebar.tmux
-        set -g @theme_variation 'storm'
-        run-shell ${tokyo-night}/share/tmux-plugins/tmux-tokyo-night/tmux-tokyo-night.tmux
+        set-option -g renumber-windows on
       '';
     };
 

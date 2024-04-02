@@ -1,4 +1,4 @@
-{ flake, pkgs, ... }: {
+{ flake, ... }: {
   imports = [
     ./nix-index.nix
     ./neovim.nix # Uncomment this if you do not want to setup Neovim.
