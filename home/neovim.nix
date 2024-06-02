@@ -54,6 +54,15 @@ let
       sha256 = "sha256-eSrng/h+hN8iSu2nLLfqSMvnOmBXE2Rwwil4KWSZWU4=";
     };
   };
+  recording = pkgs.vimUtils.buildVimPlugin {
+    name = "nvim-recording";
+    src = pkgs.fetchFromGitHub {
+      owner = "chrisgrieser";
+      repo = "nvim-recorder";
+      rev = "e5446bc8181e83e1281e5e417eb09b7bc843806a";
+      sha256 = "sha256-zs5rdw7YCYjj0hdKrHmqneBvWL1laALnEFP4A4+HWbs=";
+    };
+  };
 in {
   imports = [ flake.inputs.nixvim.homeManagerModules.nixvim ];
 
@@ -282,11 +291,11 @@ in {
       hmts.enable = true; # Enables syntax highlighting inside string
       which-key.enable = true;
       gitsigns.enable = true;
-      diffview.enable = true;
+      # diffview.enable = true;
       notify.enable = true;
       trouble.enable = true;
       #lsp-format.enable = true;
-      inc-rename.enable = true;
+      # inc-rename.enable = true;
       fidget = {
         enable = true;
         notification = { window = { winblend = 0; }; };
@@ -299,7 +308,7 @@ in {
         enable = true;
         modes = [ "/" ];
       };
-      vim-matchup.enable = true;
+      # vim-matchup.enable = true;
       markdown-preview.enable = true;
       nix.enable = true;
       nvim-autopairs = { enable = true; };
@@ -311,28 +320,28 @@ in {
         enable = true;
         enableTelescope = true;
       };
+      luasnip.enable = true;
       cmp = {
         enable = true;
         settings = {
+          snippet.expand =
+            "function(args) require('luasnip').lsp_expand(args.body) end";
           sources = [
-            {
-              name = "nvim_lsp";
-              group_index = 1;
-            }
+            { name = "nvim_lsp"; }
             {
               name = "buffer";
-              group_index = 2;
             }
-            { name = "treesitter"; }
-            { name = "async_path"; }
-            { name = "nvim_lsp_signature_help"; }
-            { name = "spell"; }
+            # { name = "treesitter"; }
+            # { name = "async_path"; }
+            # { name = "nvim_lsp_signature_help"; }
+            # { name = "spell"; }
           ];
           mapping = {
             "<Tab>" = "cmp.mapping(cmp.mapping.select_next_item(), {'i', 's'})";
             "<S-Tab>" =
               "cmp.mapping(cmp.mapping.select_prev_item(), {'i', 's'})";
-            "<CR>" = "cmp.mapping.confirm({ select = true })";
+            "<CR>" =
+              "cmp.mapping.confirm({ select = true, behavior = cmp.ConfirmBehavior.Insert })";
           };
         };
       };
@@ -343,7 +352,7 @@ in {
           bottom_search = true;
           command_palette = true;
           long_message_to_split = true;
-          inc_rename = true;
+          # inc_rename = true;
         };
       };
 
@@ -360,8 +369,8 @@ in {
             enable = true;
             caseMode = "ignore_case";
           };
-          frecency.enable = true;
-          undo.enable = true;
+          # frecency.enable = true;
+          # undo.enable = true;
         };
       };
 
@@ -474,6 +483,9 @@ in {
         ];
       };
 
+      rust-tools.enable = true;
+      tmux-navigator.enable = true;
+
       #lazy = {
       #  enable = true;
       #  plugins = [{ pkg = kanagawa; }];
@@ -483,8 +495,8 @@ in {
     extraConfigLua =
       #lua
       ''
-        require("sad").setup()
-        require("dressing").setup({})
+        -- require("sad").setup()
+        -- require("dressing").setup({})
         require("git-conflict").setup({})
         require('telescope').load_extension('themes')
         wilder.set_option('renderer', wilder.popupmenu_renderer(
@@ -505,7 +517,7 @@ in {
               ["end"] = { args.line2, end_line:len() },
             }
           end
-          require("conform").format({ async = false, lsp_fallback = true, range = range })
+          require("conform").format({ async = false, lsp_fallback = true, range = range, timeout_ms = 2000 })
         end, { range = true })
         local builtin = require 'statuscol.builtin'
         require('statuscol').setup {
@@ -531,6 +543,7 @@ in {
       vim-startuptime # Profile startup time
       kanagawa # colorscheme
       statuscol-nvim # Needed to remove fold numbers on sidebar
+      recording
       # dropbar-nvim # Try once neovim is upgraded to 0.10
       # (pkgs.vimUtils.buildVimPlugin {
       #   name = "tmuxjump";

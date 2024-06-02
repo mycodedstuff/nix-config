@@ -65,6 +65,13 @@ in {
     sad
     bottom
     coreutils
+    ghostscript
+    just
+    tmate
+    go
+    process-compose
+    rustup
+    yazi
 
     # Nix dev
     cachix
@@ -72,22 +79,15 @@ in {
     nix-info
     nixpkgs-fmt
     nixci
-
-    # Dev
-    just
-    tmate
-
     nix-health
-    nixfmt
-    ghostscript
 
     #Formatters
     jq
+    nixfmt
     haskellPackages.hindent
     haskellPackages.cabal-fmt
     prettierd
     stylua
-    rustfmt
     black
     codespell
     cmake-format
@@ -157,7 +157,7 @@ in {
         }
         [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
         export PATH="/Users/amansingh/.scripts:/Users/amansingh/Library/Python/3.8/bin:/usr/local/opt/postgresql@13/bin:/usr/local/opt/openjdk@8/bin:/usr/local/sbin:$PATH"
-        export PATH="/Users/amansingh/.pyenv/versions/2.7.18/bin:$PATH"
+        export PATH="/Users/amansingh/.pyenv/versions/2.7.18/bin:/Users/amansingh/.local/bin:$PATH"
         export PATH=/run/current-system/sw/bin/:/nix/var/nix/profiles/default/bin:$HOME/.nix-profile/bin:/etc/profiles/per-user/$USER/bin:$PATH
 
         # Make Nix and home-manager installed things available in PATH.
@@ -235,10 +235,11 @@ in {
             set -g @continuum-save-interval '5' # minutes
           '';
         }
+        vim-tmux-navigator
       ];
       extraConfig = ''
         bind v copy-mode
-        bind -n C-k clear-history
+        bind -n C-b send-keys -R ^M \; clear-history
         bind c new-window -c "#{pane_current_path}"
         bind '"' split-window -c "#{pane_current_path}"
         bind "'" split-window -h -c "#{pane_current_path}"
@@ -246,6 +247,7 @@ in {
         bind -T copy-mode-vi y send-keys -X copy-pipe-and-cancel pbcopy
         bind -T copy-mode-vi Enter send-keys -X copy-pipe-and-cancel pbcopy
         set-option -g renumber-windows on
+        set-option -g repeat-time 300
       '';
     };
 
