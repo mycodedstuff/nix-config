@@ -42,7 +42,7 @@ let
     src = builtins.fetchTarball {
       url =
         "https://github.com/andrew-george/telescope-themes/archive/master.tar.gz";
-      sha256 = "sha256:0fkpplzcms678hk9myhmf353q92j68ds3q2npppzwixyfq777j1b";
+      sha256 = "sha256:1hh36fw92cc8kg2jng5314jjixdi6xzv0w08nm4vwjjckn94ns99";
     };
   };
   kanagawa = pkgs.vimUtils.buildVimPlugin {
@@ -63,7 +63,8 @@ let
       sha256 = "sha256-zs5rdw7YCYjj0hdKrHmqneBvWL1laALnEFP4A4+HWbs=";
     };
   };
-in {
+in
+{
   imports = [ flake.inputs.nixvim.homeManagerModules.nixvim ];
 
   programs.nixvim = {
@@ -72,26 +73,28 @@ in {
     # theme
     colorschemes.catppuccin = {
       enable = true;
-      flavour = "mocha";
-      dimInactive = {
-        enabled = true;
-        shade = "dark";
-        percentage = 0.15;
-      };
-      integrations = {
-        notify = true;
-        fidget = true;
-        barbar = true;
-        # Enable this once dropbar in enabled
-        # dropbar = {
-        #   enabled = true;
-        #   color_mode = false;
-        # };
+      settings = {
+        flavour = "mocha";
+        dimInactive = {
+          enabled = true;
+          shade = "dark";
+          percentage = 0.15;
+        };
+        integrations = {
+          notify = true;
+          fidget = true;
+          barbar = true;
+          # Enable this once dropbar in enabled
+          # dropbar = {
+          #   enabled = true;
+          #   color_mode = false;
+          # };
+        };
       };
     };
 
     # settings
-    options = {
+    opts = {
       expandtab = true;
       shiftwidth = 2;
       smartindent = true;
@@ -257,6 +260,16 @@ in {
         action = "<cmd>enew<CR>";
         options = { desc = "open new buffer"; };
       }
+      {
+        key = "<leader><S-n>";
+        action = "<cmd>new<CR>";
+        options = { desc = "open new buffer in hsplit"; };
+      }
+      {
+        key = "<leader><C-n>";
+        action = "<cmd>vnew<CR>";
+        options = { desc = "open new buffer in vsplit"; };
+      }
     ];
     plugins = {
 
@@ -267,7 +280,8 @@ in {
         diagnostics = "nvim_lsp";
         separatorStyle = "slope";
         highlights = {
-          tabSeparatorSelected = { # FIXME: This doesn't seem to work
+          tabSeparatorSelected = {
+            # FIXME: This doesn't seem to work
             underline = true;
             sp = "red";
           };
@@ -287,7 +301,7 @@ in {
         enable = true;
         theme = "catppuccin-mocha";
       };
-      ts-context-commentstring.enable = true;
+      # ts-context-commentstring.enable = true;
       hmts.enable = true; # Enables syntax highlighting inside string
       which-key.enable = true;
       gitsigns.enable = true;
@@ -354,20 +368,26 @@ in {
           long_message_to_split = true;
           # inc_rename = true;
         };
+        views = {
+          hover = {
+            border = { style = "rounded"; };
+            size = { max_width = 80; };
+          };
+        };
       };
 
       telescope = {
         enable = true;
         keymaps = {
           "<leader><space>" = {
-            desc = "file finder";
+            options = { desc = "file finder"; };
             action = "find_files";
           };
         };
         extensions = {
           fzf-native = {
             enable = true;
-            caseMode = "ignore_case";
+            settings = { caseMode = "ignore_case"; };
           };
           # frecency.enable = true;
           # undo.enable = true;
@@ -380,7 +400,7 @@ in {
         servers = {
           hls.enable = true;
           marksman.enable = true;
-          nil_ls.enable = true;
+          nil-ls.enable = true;
           bashls.enable = true;
           lua-ls.enable = true;
           rust-analyzer = {
@@ -457,9 +477,9 @@ in {
           "_" = [ "trim_whitespace" ];
         };
         formatters = {
-          hindent = { command = "/Users/amansingh/.nix-profile/bin/hindent"; };
+          hindent = { command = "/Users/aman.singh/.nix-profile/bin/hindent"; };
           cabal-fmt = {
-            command = "/Users/amansingh/.nix-profile/bin/cabal-fmt";
+            command = "/Users/aman.singh/.nix-profile/bin/cabal-fmt";
           };
         };
       };

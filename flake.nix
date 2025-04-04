@@ -27,7 +27,7 @@
         ./nix/toplevel.nix
       ];
 
-      flake.nix-dev-home.username = "amansingh";
+      flake.nix-dev-home.username = "aman.singh";
 
       perSystem = { self', pkgs, ... }: {
         formatter = pkgs.nixpkgs-fmt;

@@ -45,7 +45,8 @@ let
     rtpFilePath = "tmux-network-bandwidth.tmux";
   };
   # Platform-independent terminal setup
-in {
+in
+{
   xdg.configFile = {
     "direnv/direnv.toml".text = ''
       [global]
@@ -72,6 +73,11 @@ in {
     process-compose
     rustup
     yazi
+    # llvm_12
+    inetutils
+    podman
+    podman-tui
+    podman-desktop
 
     # Nix dev
     cachix
@@ -86,6 +92,7 @@ in {
     nixfmt
     haskellPackages.hindent
     haskellPackages.cabal-fmt
+    # haskellPackages.ghcup
     prettierd
     stylua
     black
@@ -98,6 +105,9 @@ in {
     lg = "lazygit";
     v = "nvim";
     t = "tmux";
+    cb = "cabal build";
+    ce = "cabal exec";
+    cr = "cabal run";
   };
 
   # Programs natively supported by home-manager.
@@ -149,20 +159,19 @@ in {
         enable = true;
         plugins = [ "git" "sudo" "docker" "direnv" "fzf" ];
       };
-      envExtra = ''
+      initExtra = ''
+        export LANG=en_GB.UTF-8
         export NVM_DIR="$HOME/.nvm"
-        function nvm() {
-          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-            nvm "$@"
-        }
-        [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-        export PATH="/Users/amansingh/.scripts:/Users/amansingh/Library/Python/3.8/bin:/usr/local/opt/postgresql@13/bin:/usr/local/opt/openjdk@8/bin:/usr/local/sbin:$PATH"
-        export PATH="/Users/amansingh/.pyenv/versions/2.7.18/bin:/Users/amansingh/.local/bin:$PATH"
-        export PATH=/run/current-system/sw/bin/:/nix/var/nix/profiles/default/bin:$HOME/.nix-profile/bin:/etc/profiles/per-user/$USER/bin:$PATH
+        [ -s "/usr/local/opt/nvm/nvm.sh" ] && \. "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
+        [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+
+        export PATH="/Users/aman.singh/.scripts:/Users/aman.singh/Library/Python/3.8/bin:/usr/local/opt/postgresql@13/bin:/usr/local/opt/openjdk@8/bin:/usr/local/sbin:/usr/local/bin:$PATH"
+        export PATH="/Users/aman.singh/.pyenv/versions/2.7.18/bin:/Users/aman.singh/.local/bin:$PATH"
 
         # Make Nix and home-manager installed things available in PATH.
         export PATH=/run/current-system/sw/bin/:/nix/var/nix/profiles/default/bin:$HOME/.nix-profile/bin:/etc/profiles/per-user/$USER/bin:$PATH
-        [ -f "/Users/amansingh/.ghcup/env" ] && source "/Users/amansingh/.ghcup/env" # ghcup-env
+        export PATH="/usr/local/opt/llvm@12/bin:$PATH"
+        [ -f "/Users/aman.singh/.ghcup/env" ] && source "/Users/aman.singh/.ghcup/env" # ghcup-env
       '';
     };
 
@@ -212,14 +221,16 @@ in {
         }
         {
           plugin = tmux-network-bandwidth;
-          extraConfig = let
-            script = pkgs.writeShellScript "status-right-decor" ''
-              tmux set-option -gq status-right "#[bg=#15161e] #{network_bandwidth} $(tmux show-option -gqv status-right)"
+          extraConfig =
+            let
+              script = pkgs.writeShellScript "status-right-decor" ''
+                tmux set-option -gq status-right "#[bg=#15161e] #{network_bandwidth} $(tmux show-option -gqv status-right)"
+              '';
+            in
+            ''
+              set-option -g status-interval 2
+              run-shell ${script}
             '';
-          in ''
-          set-option -g status-interval 2
-          run-shell ${script}
-          '';
         }
         {
           plugin = tmux-ressurect;
