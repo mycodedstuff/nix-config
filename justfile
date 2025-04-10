@@ -1,40 +1,32 @@
 # Like GNU `make`, but `just` rustier.
-# https://just.systems/man/en/chapter_19.html
+# https://just.systems/
 # run `just` from this directory to see available commands
 
 # Default command when 'just' is run without arguments
 default:
   @just --list
 
-# Print nix flake inputs and outputs
-io:
-  nix flake metadata
-  nix flake show
-
 # Update nix flake
+[group('Main')]
 update:
   nix flake update
 
 # Lint nix files
+[group('dev')]
 lint:
   nix fmt
 
 # Check nix flake
+[group('dev')]
 check:
   nix flake check
 
 # Manually enter dev shell
+[group('dev')]
 dev:
   nix develop
 
-# Build nix flake
-build: lint check
-  nix build
-
-# Remove build output link (no garbage collection)
-clean:
-  rm -f ./result
-
-# Run nix flake to setup environment
-run: lint check
+# Activate the configuration
+[group('Main')]
+run:
   nix run
