@@ -59,7 +59,7 @@ let
       sha256 = "sha256-L3XsAEtJdEkYaCZwDqS6+khgQy1JLWrZX2xntyBD968=";
     };
   }).overrideAttrs {
-    nvimSkipModules = ["themes"];
+    nvimSkipModules = [ "themes" ];
   };
   kanagawa = pkgs.vimUtils.buildVimPlugin {
     name = "kanagawa";
@@ -79,7 +79,8 @@ let
       sha256 = "sha256-zs5rdw7YCYjj0hdKrHmqneBvWL1laALnEFP4A4+HWbs=";
     };
   };
-in {
+in
+{
   # Theme
   colorschemes.catppuccin = {
     enable = true;

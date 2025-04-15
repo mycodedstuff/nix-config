@@ -35,6 +35,7 @@ in
     inetutils
     podman
     podman-tui
+    podman-desktop
 
     # Nix dev
     cachix
